@@ -1,9 +1,9 @@
-# Semantic_annotation_pipeline-extraction_module
+# Semantic_annotation_pipeline-annotation_module
 
 # Short Description
 This module is part of a semantic annotation pipeline, that handles the annotation the information from a document.
 # Installation
-Two types of usage are available. One way is to use the dockerized version of this module. To use the dockerized version, see iInstallation with docker. 
+Two types of usage are available. One way is to use the dockerized version of this module. To use the dockerized version, see Installation with docker. 
 The other way is to install it locally by executing the steps from Installation in environment. 
 
 
