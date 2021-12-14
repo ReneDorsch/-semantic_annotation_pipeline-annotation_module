@@ -31,7 +31,9 @@ This file includes the trained models for each subtask. Download it and add them
 so it will be: core/files/annotation_model/spanBert/final-model.pt
 
 ### Download and install the other modules, to execute the annotation process.
-ToDo: Add links to repositories.
+https://github.com/ReneDorsch/semantic_annotation_pipeline-ui/
+https://github.com/ReneDorsch/semantic_annotation_pipeline-extraction_module/
+https://github.com/ReneDorsch/semantic_annotation_pipeline-analysis_module/
 
 ### Start the program
 `python main.py`
