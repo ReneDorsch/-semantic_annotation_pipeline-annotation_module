@@ -1,9 +1,9 @@
-# Semantic_annotation_pipeline-extraction_module
+# Semantic_annotation_pipeline-annotation_module
 
 # Short Description
 This module is part of a semantic annotation pipeline, that handles the annotation the information from a document.
 # Installation
-Two types of usage are available. One way is to use the dockerized version of this module. To use the dockerized version, see iInstallation with docker. 
+Two types of usage are available. One way is to use the dockerized version of this module. To use the dockerized version, see Installation with docker. 
 The other way is to install it locally by executing the steps from Installation in environment. 
 
 
@@ -25,10 +25,15 @@ conda activate NEW_ENVIRONMENT_NAME
 pip install -r requirements.txt
 `
 ### Download the trained models
-ToDo: Add links to repositories.
+https://faubox.rrze.uni-erlangen.de/getlink/fiB1CqZjVGbadQo4MgX7KacR/Models.zip
+
+This file includes the trained models for each subtask. Download it and add them to the specified folders. For the analysis-module add the models of the folder qa_models to: /core/files/annotation_model/
+so it will be: core/files/annotation_model/spanBert/final-model.pt
 
 ### Download and install the other modules, to execute the annotation process.
-ToDo: Add links to repositories.
+https://github.com/ReneDorsch/semantic_annotation_pipeline-ui/
+https://github.com/ReneDorsch/semantic_annotation_pipeline-extraction_module/
+https://github.com/ReneDorsch/semantic_annotation_pipeline-analysis_module/
 
 ### Start the program
 `python main.py`
