@@ -14,7 +14,8 @@ class DocumentAnalysis(BaseModel):
     knowledgeObjects: List[KnowledgeObject] = []
 
     class Config:
-        arbitrary_types_allowed = True  # Allows to use Classes that are not validated
+        # Allows to use Classes that are not validated
+        arbitrary_types_allowed = True
 
     def to_output_model(self) -> Document:
         """ Saves the data as an ExtractedData-Object. """

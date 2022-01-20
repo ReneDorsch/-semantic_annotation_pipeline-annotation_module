@@ -57,7 +57,10 @@ class AnnotationStrategy(TransformationStrategy):
             for paragraph in chapter.paragraphs:
                 sentences.extend(paragraph.sentences)
 
-        self.annotate_sentences(sentences, batchOfSentences, batchsize)
+        self.annotate_with_model(batchsize, sentences, batchOfSentences)
+
+        self.annotate_with_pattern_matching(sentences)
+        
 
     def annotate_tables(self, tables, batchOfSentences: bool = True, batchsize: int = 64) -> None:
         '''
@@ -75,20 +78,11 @@ class AnnotationStrategy(TransformationStrategy):
             print("Sorry you did something wrong. Check your batchsize (size > 0 and int) and if you want to use a "
                   "batch of sentences for the annotation task (True).")
 
-        self.annotate_sentences(sentences, batchOfSentences, batchsize)
 
-    def annotate_sentences(self, sentences: List[Sentence], state: bool, batchsize: int):
-        '''
-
-        :param state: Using single sentence annotation (False) or batch sentence annotations (True)
-        :param batchsize: size of the Batch
-        :return:
-        '''
-
-
-        self.annotate_with_model(batchsize, sentences, state)
+        self.annotate_with_model(batchsize, sentences, batchOfSentences)
 
         self.annotate_with_pattern_matching(sentences)
+
 
     def get_annotations(self, sentences: List[Sentence]) -> List[Annotation]:
         res = []
@@ -133,18 +127,21 @@ class AnnotationStrategy(TransformationStrategy):
             if is_large:
 
                 for match in re.finditer(re.escape(label), sentence.getText(inNormalizedForm)):
-                    words = sentence.get_words_of_span((match.start(), match.end()), useNormalizedForm=True)
+                    words = sentence.get_words_of_span(span=(match.start(), match.end()),
+                                                       use_normalized_form=True)
 
-                    if any([_.hasAnnotation for _ in words]): continue
+                    if any([_.has_annotation for _ in words]): continue
 
                     label = " ".join([word.word for word in words])
                     try:
-                        startPosition = min([_.startPos for _ in words])
-                        endPosition = max([_.endPos for _ in words])
+                        startPosition = min([_.start_pos for _ in words])
+                        endPosition = max([_.end_pos for _ in words])
                     except:
                         print("ok")
                     # Adds a new Annotation
-                    anno = Annotation.create_manual_annotation(label, startPosition, endPosition,
+                    anno = Annotation.create_manual_annotation(label,
+                                                               startPosition,
+                                                               endPosition,
                                                                annotation.category,
                                                                annotation.specificCategory, words)
                     anno.addSynonym(annotation)
@@ -165,7 +162,9 @@ class AnnotationStrategy(TransformationStrategy):
                     end = match.end()
                     if match.group()[0] == " ":
                         start += 1
-                    words = sentence.get_words_of_span((start, end), useNormalizedForm=False)
+                    words = sentence.get_words_of_span(span=(start, end),
+                                                       use_normalized_form=False)
+
                     # Checks if the words are already part of an annotation
                     if any([_.hasAnnotation for _ in words]): continue
 
@@ -173,8 +172,12 @@ class AnnotationStrategy(TransformationStrategy):
                     startPos = min([word.startPos for word in words])
                     endPos = max([word.endPos for word in words])
                     # Adds a new Annotation
-                    anno = Annotation.create_manual_annotation(label, startPos, endPos, annotation.category,
-                                                               annotation.specificCategory, words)
+                    anno = Annotation.create_manual_annotation(label,
+                                                               startPos,
+                                                               endPos,
+                                                               annotation.category,
+                                                               annotation.specificCategory,
+                                                               words)
                     anno.addSynonym(annotation)
                     sentence.annotations.append(anno)
                     new_annos.append(anno)
@@ -401,7 +404,7 @@ class AnnotationStrategy(TransformationStrategy):
             end = match.end()
             if match.group()[0] == " ":
                 start += 1
-            words = sentence.get_words_of_span((start, end), useNormalizedForm=True)
+            words = sentence.get_words_of_span((start, end), use_normalized_form=True)
             # Checks if the words are already part of an annotation
             already_annotated: bool = any([_.has_annotation for _ in words])
             is_figure: bool = any([_.word.lower() in ['figure', 'fig', 'fig.'] for _ in words])

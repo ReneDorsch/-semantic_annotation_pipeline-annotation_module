@@ -65,11 +65,7 @@ class TableStrategy(TransformationStrategy):
 
 
     def table_to_sentence(self, table) -> None:
-        '''
-        Transforms the table in a list of simple sentences.
-
-        :return: None
-        '''
+        '''Transforms the table in a list of simple sentences.        '''
         table_header = table.get_table_header()
         lines = table.lines
         units = table.units
@@ -84,19 +80,6 @@ class TableStrategy(TransformationStrategy):
                     sentence=text,
                     table=table)
                 table.textual_representations.append(sentence)
-                #line.textual_representation = sentence
-
-        c = """
-        for line in lines:
-            for cell, name, unit in zip(line.cells, table_header.cells, units):
-                text: str = f"The {name.textInCell} has a value of {cell.textInCell}{unit if unit else ''}."
-                text = re.sub(" +", " ", text)
-                sentence = Sentence.from_table(
-                    sentence=text,
-                    table=table)
-                table.textual_representations.append(sentence)
-                line.textual_representation = sentence
-        """
 
 
     def _get_list_of_table_units(self, lines: List[Union[Row, Column]]) -> List[str]:

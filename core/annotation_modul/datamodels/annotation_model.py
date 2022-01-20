@@ -18,8 +18,8 @@ class Annotation:
         self.annotationID: int = Annotation.IDCOUNTER
         self.category: str = category
         self.specificCategory: str = specificCategory
-        self.wordList: List['Word'] = []
-        self.synonymicalAnnotations: List['Annotation'] = []
+        self.words: List['Word'] = []
+        self.synonymical_annotations: List['Annotation'] = []
         self.typeOfAnnotation = typeOfAnnotation
         self.setWords(tokens, wordList, typeOfAnnotation)
         self.knowledgeObject = None
@@ -30,7 +30,7 @@ class Annotation:
 
     def to_io(self) -> io.Annotation:
         return io.Annotation(**{
-            'words': [_.to_io() for _ in self.wordList],
+            'words': [_.to_io() for _ in self.words],
             'category': self.specificCategory,
             'id': self.annotationID,
         })
@@ -39,7 +39,7 @@ class Annotation:
             'id': self.annotationID,
             'category': self.category,
             'label': self.label,
-            'words': [_.id for _ in self.wordList]
+            'words': [_.id for _ in self.words]
         }
         return res
 
@@ -48,7 +48,7 @@ class Annotation:
 
     def getWordsAsString(self, useNormalizedForm=False) -> str:
         words = ""
-        for word in self.wordList:
+        for word in self.words:
             if useNormalizedForm:
                 if word.has_space_after_word:
                     words += word.normalized_form + " "
@@ -83,12 +83,12 @@ class Annotation:
             for token in tokens:
                 for word in wordList:
                     if word.start_pos == token.start_pos:
-                        if word.start_pos not in [_.start_pos for _ in self.wordList]:
-                            self.wordList.append(word)
+                        if word.start_pos not in [_.start_pos for _ in self.words]:
+                            self.words.append(word)
                             word.add_annotation(token.get_tag('ner'), self, typeOfAnnotation)
         else:
             # Is Annotation with Manual Annotater
-            self.wordList.extend(tokens)
+            self.words.extend(tokens)
             for word in tokens:
                 word.add_annotation(self.category, self, typeOfAnnotation)
 
@@ -99,16 +99,16 @@ class Annotation:
         :param state: Limits the recursive call of the Function
         :return:
         '''
-        self.synonymicalAnnotations.append(synonym)
+        self.synonymical_annotations.append(synonym)
         if state: synonym.addSynonym(self, False)
 
     def adjustInformation(self):
-        if self.synonymicalAnnotations != []:
+        if self.synonymical_annotations != []:
             zwerg = defaultdict(int)
-            for anno in self.synonymicalAnnotations:
+            for anno in self.synonymical_annotations:
                 zwerg[anno.category] += 1
             self.category = max([(_, __) for _, __ in zwerg.items()], key=lambda x: x[1])[0]
             zwerg = defaultdict(int)
-            for anno in self.synonymicalAnnotations:
+            for anno in self.synonymical_annotations:
                 zwerg[anno.specificCategory] += 1
             self.specificCategory = max([(_, __) for _, __ in zwerg.items()], key=lambda x: x[1])[0]

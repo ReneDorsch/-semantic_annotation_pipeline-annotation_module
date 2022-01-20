@@ -8,6 +8,7 @@ from core.annotation_modul.apis.util_functions import STEMMER, TOKENIZER
 import core.schemas.datamodel as io
 import re
 
+
 class Text:
     def __init__(self):
         self.chapters = []
@@ -21,12 +22,11 @@ class Text:
             'chapters': [_.to_io() for _ in self.chapters],
             'abstract': self.abstract.to_io() if self.abstract is not None else None
         })
+
     def read_json(self, jsonDumpText, jsonDumpAbstract):
         self.chapters = [Chapter(chap) for chap in jsonDumpText['chapters']]
         if jsonDumpAbstract is not None:
             self.abstract = self._set_abstract(jsonDumpAbstract)
-
-
 
     def _set_abstract(self, dumpfile):
         if 'paragraphs' in dumpfile:
@@ -182,8 +182,8 @@ class Sentence:
             self.words.append(word)
             prevWord = word
 
-    def get_words_of_span(self, span: Tuple[int, int], useNormalizedForm: bool = False) -> List[Word]:
-        if useNormalizedForm:
+    def get_words_of_span(self, span: Tuple[int, int], use_normalized_form: bool = False) -> List[Word]:
+        if use_normalized_form:
             return self._get_normalized_words_of_span(span)
         else:
             return self._get_words_of_span(span)

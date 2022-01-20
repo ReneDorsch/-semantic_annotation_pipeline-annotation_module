@@ -1,18 +1,14 @@
 from __future__ import annotations
-import re
 
-from typing import Tuple, List, Dict, Union
+from typing import List, Dict, Union
 
 from core.annotation_modul.datamodels.text_models import Sentence
 from core.annotation_modul.datamodels.annotation_model import Annotation
 
 from core.config import CATEGORICAL_LABELS, UNITS
-from ..apis.util_functions import load_table
+from ..apis.util_functions import load_table, TOKENIZER
 import core.schemas.datamodel as io
-
-from ..apis.util_functions import TOKENIZER
 from flair.data import Sentence as fdSentence
-
 
 class Table:
     # Get the categories and units as a sorted list
@@ -47,37 +43,7 @@ class Table:
     def get_table_header(self) -> Union[Row, Column]:
         return self.table_header
 
-    def annotate_cells(self):
-        res = []
-        cells = []
-        annotations = []
-
-        for sentence in self.textual_representations:
-            annotations.extend(sentence.annotations)
-        annotations = list(set(annotations))
-
-        lines = self.lines + [self.table_header]
-        for line in lines:
-            cells.extend(line.cells)
-
-        for annotation in annotations:
-            for cell in cells:
-                sentence = fdSentence(cell.textInCell, use_tokenizer=TOKENIZER)
-                for word in sentence.tokens:
-                    for annotation_word in annotation.wordList:
-                        if word.text == annotation_word.word:
-                            cell.annotations.append(annotation)
-                            cell.knowledgeObject.append(annotation.knowledgeObject)
-                            res.append(annotation.knowledgeObject)
-        return res
-
-
     def save_as_dict(self):
-        # To-Do:
-        # Write saved data
-        # Add kOBjs in Tables
-        # Add labels, and data
-        # Add header
         kObjs = []
         for row in self.rows:
             for cell in row.cells:
@@ -133,6 +99,29 @@ class Table:
 
         return line
 
+    def annotate_cells(self):
+        res = []
+        cells = []
+        annotations = []
+
+        for sentence in self.textual_representations:
+            annotations.extend(sentence.annotations)
+        annotations = list(set(annotations))
+
+        lines = self.lines + [self.table_header]
+        for line in lines:
+            cells.extend(line.cells)
+
+        for annotation in annotations:
+            for cell in cells:
+                sentence = fdSentence(cell.textInCell, use_tokenizer=TOKENIZER)
+                for word in sentence.tokens:
+                    for annotation_word in annotation.words:
+                        if word.text == annotation_word.word:
+                            cell.annotations.append(annotation)
+                            cell.knowledgeObject.append(annotation.knowledgeObject)
+                            res.append(annotation.knowledgeObject)
+        return res
 
 class Row:
 
